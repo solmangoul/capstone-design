@@ -17,6 +17,9 @@
   "homepage": "https://github.com/solmangoul/capstone-design#readme",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "mongoose": "^8.13.1",
+    "nodemon": "^3.1.9"
   }
 }
