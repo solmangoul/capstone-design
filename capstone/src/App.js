@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './App.css';
-
-const dummySpaces = [
-  { id: 1, location: '강남', capacity: 4, title: '강남 보드게임룸', category: '보드게임', image: 'https://via.placeholder.com/300x200' },
-  { id: 2, location: '홍대', capacity: 6, title: '홍대 음악 연습실', category: '음악', image: 'https://via.placeholder.com/300x200' },
-  { id: 3, location: '잠실', capacity: 2, title: '잠실 독서실', category: '게임', image: 'https://via.placeholder.com/300x200' },
-  { id: 4, location: '강남', capacity: 10, title: '강남 파티룸', category: '엔터', image: 'https://via.placeholder.com/300x200' },
-];
 
 const timeOptions = Array.from({ length: 48 }, (_, i) => {
   const hours = String(Math.floor(i / 2)).padStart(2, '0');
@@ -15,6 +9,7 @@ const timeOptions = Array.from({ length: 48 }, (_, i) => {
 });
 
 function App() {
+  const [spaces, setSpaces] = useState([]);
   const [location, setLocation] = useState('');
   const [date, setDate] = useState('');
   const [startTime, setStartTime] = useState('');
@@ -23,8 +18,21 @@ function App() {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
 
+  // ✅ DB에서 공간 목록 불러오기
+  useEffect(() => {
+    axios.get('http://localhost:8081/spaces')
+      .then(res => {
+        setSpaces(res.data);
+        setResults(res.data); // 초기 추천 공간에도 사용
+      })
+      .catch(err => {
+        console.error('❌ 공간 목록 불러오기 실패:', err);
+      });
+  }, []);
+
+  // ✅ 검색 필터
   const handleSearch = () => {
-    const filtered = dummySpaces.filter(
+    const filtered = spaces.filter(
       (space) =>
         space.location.includes(location) &&
         space.capacity >= parseInt(people || 0)
@@ -92,10 +100,10 @@ function App() {
           results.length > 0 ? (
             results.map((space) => (
               <div key={space.id} className="card">
-                <img src={space.image} alt={space.title} />
-                <h3>{space.title}</h3>
+                <img src={space.image_url} alt={space.name} />
+                <h3>{space.name}</h3>
                 <p>위치: {space.location}</p>
-                <p>최대 인원: {space.capacity}명</p>
+                <p>최대 인원: {space.capacity || space.max_capacity || 'N/A'}명</p>
               </div>
             ))
           ) : (
@@ -104,12 +112,12 @@ function App() {
         ) : (
           <>
             <h2 style={{ textAlign: 'center', width: '100%' }}>추천 공간</h2>
-            {dummySpaces.map((space) => (
+            {results.map((space) => (
               <div key={space.id} className="card">
-                <img src={space.image} alt={space.title} />
-                <h3>{space.title}</h3>
+                <img src={space.image_url} alt={space.name} />
+                <h3>{space.name}</h3>
                 <p>위치: {space.location}</p>
-                <p>최대 인원: {space.capacity}명</p>
+                <p>최대 인원: {space.capacity || space.max_capacity || 'N/A'}명</p>
               </div>
             ))}
           </>
