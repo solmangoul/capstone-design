@@ -25,10 +25,11 @@ connection.connect(err => {
 // ✅ React 정적 파일 서빙
 app.use(express.static(path.join(__dirname, '/capstone/build')));
 
-// ✅ 예제 라우트
-app.get('/pet', function (req, res) {
-  connection.query('SELECT * FROM pets', (err, results) => {
+// ✅ DB에서 spaces 테이블 조회
+app.get('/spaces', (req, res) => {
+  connection.query('SELECT * FROM spaces', (err, results) => {
     if (err) {
+      console.error('❌ DB 조회 실패:', err);
       res.status(500).send('DB 조회 실패');
     } else {
       res.json(results);
@@ -41,6 +42,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '/capstone/build/index.html'));
 });
 
-app.listen(PORT, function () {
+// ✅ 서버 시작
+app.listen(PORT, () => {
   console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
 });
