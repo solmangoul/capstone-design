@@ -472,10 +472,11 @@ html, body, #root {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
-  background-color: #f9fafb;
+  min-height: 100vh; /* 또는 100vh로 꽉 채워줘 */
+  background-color: transparent; /* ✅ 이게 핵심 */
   padding: 40px 20px;
 }
+
 
 .login-box,
 .auth-container {
@@ -529,4 +530,42 @@ html, body, #root {
   font-size: 14px;
   color: #374151;
   text-align: center;
+}
+/* 로그인 유지하기 체크박스 라벨 정렬 */
+.auth-container label {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 20px;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* 체크박스 크기 개선 (선택 사항) */
+.auth-container input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+/* 로그인 배경 및 오버레이 */
+.login-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/login-bg.png'); /* ✅ 반드시 public 경로 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.login-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 15, 15, 0.6);
+  z-index: -1;
 }

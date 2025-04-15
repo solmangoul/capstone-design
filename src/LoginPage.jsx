@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './App.css'; // 또는 './Login.css' 등
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ function LoginPage() {
         username,
       };
 
-      // 로그인 상태 저장 (유지 여부에 따라)
+      // 로그인 상태 저장
       if (rememberMe) {
         localStorage.setItem('user', JSON.stringify(userData));
       } else {
@@ -40,45 +41,52 @@ function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <form className="auth-container" onSubmit={handleLogin}>
-        <h2 className="auth-title">로그인</h2>
+    <>
+      {/* 배경 이미지와 어두운 오버레이 */}
+      <div className="login-background" />
+      <div className="login-overlay" />
 
-        <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+      {/* 로그인 폼 */}
+      <div className="auth-page">
+        <form className="auth-container" onSubmit={handleLogin}>
+          <h2 className="auth-title">로그인</h2>
 
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        <label>
           <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={() => setRememberMe(!rememberMe)}
+            type="email"
+            placeholder="이메일"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
-          로그인 유지하기
-        </label>
 
-        <button type="submit">로그인</button>
+          <input
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
-        <div className="auth-footer">
-          계정이 없으신가요?{' '}
-          <a href="/register" style={{ color: '#4f46e5' }}>
-            회원가입
-          </a>
-        </div>
-      </form>
-    </div>
+          <label>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
+            로그인 유지하기
+          </label>
+
+          <button type="submit">로그인</button>
+
+          <div className="auth-footer">
+            계정이 없으신가요?{' '}
+            <a href="/register" style={{ color: '#4f46e5' }}>
+              회원가입
+            </a>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
 

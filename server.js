@@ -1,10 +1,19 @@
 const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
 const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = 8081;
+
+// ✅ 미들웨어
+app.use(cors());
+app.use(express.json());
+
+// ✅ 정적 파일 서빙 (vite → dist 사용)
+app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
 // ✅ MySQL 연결
 const connection = mysql.createConnection({
@@ -20,74 +29,71 @@ connection.connect(err => {
     return;
   }
   console.log('✅ MySQL 연결 성공!');
+});
 
-  // ✅ 테이블 자동 생성
-  const createUsersTable = `
-    CREATE TABLE IF NOT EXISTS users (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      username VARCHAR(50) NOT NULL UNIQUE,
-      password VARCHAR(100) NOT NULL,
-      email VARCHAR(100),
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
+// ✅ 회원가입
+app.post('/api/register', async (req, res) => {
+  const { username, email, password } = req.body;
 
-  const createSpacesTable = `
-    CREATE TABLE IF NOT EXISTS spaces (
-      id VARCHAR(50) PRIMARY KEY,
-      name VARCHAR(100),
-      location VARCHAR(100),
-      capacity INT,
-      price INT,
-      description TEXT,
-      image_url TEXT
-    );
-  `;
+  try {
+    const hashedPw = await bcrypt.hash(password, 10);
+    const query = `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`;
 
-  const createReservationsTable = `
-    CREATE TABLE IF NOT EXISTS reservations (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT,
-      space_id VARCHAR(50),
-      date DATE,
-      start_time TIME,
-      end_time TIME,
-      people INT,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (space_id) REFERENCES spaces(id)
-    );
-  `;
+    connection.query(query, [username, email, hashedPw], (err, results) => {
+      if (err) {
+        console.error('❌ 회원가입 실패:', err);
+        return res.status(500).json({ message: '회원가입 실패', error: err });
+      }
 
-  // 순차 실행
-  connection.query(createUsersTable, err => {
-    if (err) return console.error('❌ users 테이블 생성 실패:', err);
-    console.log('✅ users 테이블 생성 완료!');
+      console.log('✅ 회원가입 성공:', results);
+      res.status(201).json({ message: '회원가입 성공' });
+    });
+  } catch (error) {
+    res.status(500).json({ message: '암호화 오류', error });
+  }
+});
 
-    connection.query(createSpacesTable, err => {
-      if (err) return console.error('❌ spaces 테이블 생성 실패:', err);
-      console.log('✅ spaces 테이블 생성 완료!');
+// ✅ 로그인
+app.post('/api/login', (req, res) => {
+  const { email, password } = req.body;
+  const query = `SELECT id, username, password FROM users WHERE email = ?`;
 
-      connection.query(createReservationsTable, err => {
-        if (err) return console.error('❌ reservations 테이블 생성 실패:', err);
-        console.log('✅ reservations 테이블 생성 완료!');
-      });
+  connection.query(query, [email], async (err, results) => {
+    if (err) {
+      console.error('❌ 로그인 오류:', err);
+      return res.status(500).json({ message: '서버 오류' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ message: '이메일이 존재하지 않습니다.' });
+    }
+
+    const user = results[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ message: '비밀번호가 일치하지 않습니다.' });
+    }
+
+    res.status(200).json({
+      message: '로그인 성공',
+      token: 'fake-token',
+      username: user.username,
+      userId: user.id,
     });
   });
 });
 
-// ✅ 서버 라우팅 예시
-app.get('/pet', (req, res) => {
-  res.send('welcome to pet site');
-});
-
-// ✅ 정적 React 빌드 서빙 (필요한 경우)
-app.use(express.static(path.join(__dirname, 'frontend/build')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'frontend/build/index.html'));
+// ✅ React 라우팅 대응 (SPA용)
+app.get('/*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'));
 });
 
 // ✅ 서버 실행
 app.listen(PORT, () => {
   console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
+});
+// ✅ React 라우팅 대응 (SPA용)
+app.get('/*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'));
 });
