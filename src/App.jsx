@@ -10,7 +10,7 @@ import bgImage from './assets/bg.png';
 import RegisterPage from './RegisterPage';
 import './App.css';
 import './Responsive.css';
-
+import MyPage from './MyPage';
 
 function App() {
   return (
@@ -32,6 +32,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/login" element={<LoginPage />} /> {/* ✅ 로그인 라우트 */}
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/mypage" element={<MyPage />} />
           </Routes>
         </div>
         <Footer />
