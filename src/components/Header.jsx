@@ -43,6 +43,9 @@ function Header() {
             <span style={{ marginRight: '10px' }}>
               👋 {user.username}님
             </span>
+            <button className="host" onClick={() => navigate('/mypage')}>
+              마이페이지
+            </button>
             <button className="login" onClick={handleLogout}>
               로그아웃
             </button>
