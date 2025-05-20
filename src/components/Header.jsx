@@ -37,9 +37,11 @@ function Header() {
       />
 
       <div className="nav-buttons">
-        <button className="host">호스트 되기</button>
         {user ? (
           <>
+            <button className="host" onClick={() => navigate('/recommend')}>
+              장소 추천하기
+            </button>
             <span style={{ marginRight: '10px' }}>
               👋 {user.username}님
             </span>
@@ -51,10 +53,16 @@ function Header() {
             </button>
           </>
         ) : (
-          <button className="login" onClick={() => navigate('/login')}>
-            로그인
-          </button>
+          <>
+            <button className="host" onClick={() => navigate('/recommend')}>
+              장소 추천하기
+            </button>
+            <button className="login" onClick={() => navigate('/login')}>
+              로그인
+            </button>
+          </>
         )}
+
       </div>
     </header>
   );

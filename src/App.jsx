@@ -11,6 +11,7 @@ import RegisterPage from './RegisterPage';
 import './App.css';
 import './Responsive.css';
 import MyPage from './MyPage';
+import RecommendPage from './RecommendPage';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} /> {/* ✅ 로그인 라우트 */}
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/mypage" element={<MyPage />} />
+            <Route path="/recommend" element={<RecommendPage />} />
           </Routes>
         </div>
         <Footer />

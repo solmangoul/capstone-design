@@ -83,7 +83,7 @@ function Home() {
       {/* 호스트 섹션 */}
       <section
         className="host-section"
-          style={{
+        style={{
           backgroundImage: `url(${hostBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -91,12 +91,12 @@ function Home() {
           color: 'white',
         }}
       >
-      <div className="host-text">
-        <h2>호스트가 되어보세요</h2>
-        <p>당신의 취미 공간을 공유하고 수익을 창출하세요. 지금 바로 등록해보세요!</p>
-        <button>호스트 되기</button>
-      </div>
-    </section>
+        <div className="host-text">
+          <h2>추천하고 싶은 공간이 있나요?</h2>
+          <p>당신만 알고 있는 멋진 장소를 다른 사람에게 소개해보세요. 지금 바로 추천해보세요!</p>
+          <button onClick={() => navigate('/recommend')}>장소 추천하기</button>
+        </div>
+      </section>
     </div>
   );
 }
