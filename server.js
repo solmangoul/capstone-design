@@ -3,12 +3,18 @@ const mysql = require('mysql2');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const PORT = 8081;
 
-app.use(bodyParser.json()); // JSON 요청 파싱
+app.use(cors({
+  origin: 'http://localhost:5173', // Vite 프론트 주소
+  credentials: true
+}));
+
+app.use(bodyParser.json());
 
 // ✅ MySQL 연결
 const connection = mysql.createConnection({
@@ -39,11 +45,13 @@ connection.connect(err => {
   // ✅ spaces 테이블
   const createSpacesTable = `
     CREATE TABLE IF NOT EXISTS spaces (
-      id VARCHAR(50) PRIMARY KEY,
-      name VARCHAR(100),
-      location VARCHAR(100),
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      location VARCHAR(255),
+      lat DOUBLE,
+      lng DOUBLE,
       capacity INT,
-      price INT,
+      price INT NOT NULL,
       description TEXT,
       image_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -51,23 +59,7 @@ connection.connect(err => {
     );
   `;
 
-  // ✅ reservations 테이블
-  const createReservationsTable = `
-    CREATE TABLE IF NOT EXISTS reservations (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT,
-      space_id VARCHAR(50),
-      date DATE,
-      start_time TIME,
-      end_time TIME,
-      people INT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (space_id) REFERENCES spaces(id)
-    );
-  `;
-
-  // ✅ 테이블 생성 순차 실행
+  // ✅ 테이블 생성
   connection.query(createUsersTable, err => {
     if (err) return console.error('❌ users 테이블 생성 실패:', err);
     console.log('✅ users 테이블 생성 완료!');
@@ -75,11 +67,6 @@ connection.connect(err => {
     connection.query(createSpacesTable, err => {
       if (err) return console.error('❌ spaces 테이블 생성 실패:', err);
       console.log('✅ spaces 테이블 생성 완료!');
-
-      connection.query(createReservationsTable, err => {
-        if (err) return console.error('❌ reservations 테이블 생성 실패:', err);
-        console.log('✅ reservations 테이블 생성 완료!');
-      });
     });
   });
 });
@@ -104,7 +91,7 @@ app.post('/api/register', (req, res) => {
   });
 });
 
-// ✅ 로그인 API (email 기준)
+// ✅ 로그인 API
 app.post('/api/login', (req, res) => {
   const { email, password } = req.body;
 
@@ -120,8 +107,6 @@ app.post('/api/login', (req, res) => {
     }
 
     const user = results[0];
-    console.log('🔍 user row from DB:', user); // ✅ 실제 DB 데이터 확인
-
     bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) {
         console.error('❌ 비밀번호 비교 실패:', err);
@@ -136,7 +121,7 @@ app.post('/api/login', (req, res) => {
         message: '로그인 성공!',
         user: {
           id: user.id,
-          username: user.username, // ⚠️ 여기 이름이 DB 필드와 다르면 수정 필요
+          username: user.username,
           email: user.email
         }
       });
@@ -144,12 +129,47 @@ app.post('/api/login', (req, res) => {
   });
 });
 
+// ✅ 추천 장소 등록 API (lat, lng 저장 포함)
+app.post('/api/recommend', (req, res) => {
+  const {
+    name,
+    location,
+    lat,
+    lng,
+    description = '',
+    imageUrl = ''
+    // category // 향후 확장 시 테이블에 추가
+  } = req.body;
+
+  if (!name || !location || !lat || !lng) {
+    return res.status(400).json({ message: '장소명, 주소, 위도, 경도는 필수입니다.' });
+  }
+
+  const sql = `
+    INSERT INTO spaces (name, location, lat, lng, description, image_url, capacity, price)
+    VALUES (?, ?, ?, ?, ?, ?, 0, 0)
+  `;
+
+  connection.query(
+    sql,
+    [name, location, lat, lng, description, imageUrl],
+    (err, result) => {
+      if (err) {
+        console.error('❌ 장소 등록 실패:', err);
+        return res.status(500).json({ message: 'DB 오류 발생' });
+      }
+
+      res.status(200).json({ message: '장소가 등록되었습니다!', id: result.insertId });
+    }
+  );
+});
+
 // ✅ 테스트 라우트
 app.get('/pet', (req, res) => {
   res.send('welcome to pet site');
 });
 
-// ✅ 정적 파일 서빙 (Vite 빌드 결과 기준)
+// ✅ 정적 파일 서빙
 app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
