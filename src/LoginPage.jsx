@@ -9,7 +9,6 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  // ✅ 컴포넌트가 렌더링되는지 확인
   useEffect(() => {
     console.log('✅ LoginPage 렌더링됨');
   }, []);
@@ -24,8 +23,6 @@ function LoginPage() {
         password,
       });
 
-      console.log('✅ 백엔드 응답 확인:', res.data);
-
       if (!res.data || !res.data.user) {
         alert('로그인 응답 구조가 잘못되었습니다.');
         console.error('❌ 응답 user 데이터 없음:', res.data);
@@ -33,7 +30,6 @@ function LoginPage() {
       }
 
       const { id, username, email: userEmail } = res.data.user;
-
       const userData = { id, username, email: userEmail };
       const storage = rememberMe ? localStorage : sessionStorage;
       storage.setItem('user', JSON.stringify(userData));
@@ -48,7 +44,14 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-container">
+      <div
+        className="auth-container"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
         <h2 className="auth-title">로그인</h2>
 
         <input
@@ -57,6 +60,7 @@ function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          style={{ width: '100%' }}
         />
 
         <input
@@ -65,22 +69,60 @@ function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          style={{ width: '100%' }}
         />
 
-        <label>
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={() => setRememberMe(!rememberMe)}
-          />
-          로그인 유지하기
-        </label>
-
-        <button type="button" onClick={handleLogin}>
+        <button
+          type="button"
+          onClick={handleLogin}
+          style={{ width: '100%' }}
+        >
           로그인
         </button>
 
-        <div className="auth-footer">
+        {/* ✅ 로그인 유지하기: 왼쪽 정렬, 체크박스는 텍스트 옆 + 세로 정렬 정확 */}
+        <div
+          style={{
+            marginTop: '12px',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            fontSize: '14px',
+          }}
+        >
+          <label
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              whiteSpace: 'nowrap',
+              fontSize: '14px',
+              lineHeight: '1',
+            }}
+          >
+            <span style={{ marginRight: '6px' }}>로그인 유지하기</span>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+              style={{
+                width: '16px',
+                height: '16px',
+                verticalAlign: 'middle',
+              }}
+            />
+          </label>
+        </div>
+
+        {/* ✅ 계정이 없으신가요: 왼쪽 정렬 */}
+        <div
+          className="auth-footer"
+          style={{
+            marginTop: '20px',
+            fontSize: '14px',
+            width: '100%',
+            textAlign: 'left',
+          }}
+        >
           계정이 없으신가요?{' '}
           <a href="/register" style={{ color: '#4f46e5' }}>
             회원가입

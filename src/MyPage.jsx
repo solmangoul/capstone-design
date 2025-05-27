@@ -2,66 +2,71 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './mypage.css';
-import logo from './assets/logo.png'; // 로고만 사용
+import logo from './assets/logo.png';
 
 const MyPage = () => {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState({ name: '', email: '' });
-  const [reservations, setReservations] = useState([]);
-  const [favorites, setFavorites] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [activities, setActivities] = useState([]);
-  const [inquiries, setInquiries] = useState([]);
+  const [user, setUser] = useState({ username: '', email: '' });
+  const [myPlaces, setMyPlaces] = useState([]);
 
   useEffect(() => {
-    const stored =
-      localStorage.getItem('user') || sessionStorage.getItem('user');
-
+    const stored = localStorage.getItem('user') || sessionStorage.getItem('user');
     if (!stored) {
       alert('로그인이 필요한 서비스입니다.');
       navigate('/login');
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const userRes = await axios.get('/api/user');
-        const reservationsRes = await axios.get('/api/reservations');
-        const favoritesRes = await axios.get('/api/favorites');
-        const reviewsRes = await axios.get('/api/reviews');
-        const activitiesRes = await axios.get('/api/activities');
-        const inquiriesRes = await axios.get('/api/inquiries');
+    const parsed = JSON.parse(stored);
+    setUser(parsed);
 
-        setUser(userRes.data || {});
-        setReservations(Array.isArray(reservationsRes.data) ? reservationsRes.data : reservationsRes.data.data || []);
-        setFavorites(Array.isArray(favoritesRes.data) ? favoritesRes.data : favoritesRes.data.data || []);
-        setReviews(Array.isArray(reviewsRes.data) ? reviewsRes.data : reviewsRes.data.data || []);
-        setActivities(Array.isArray(activitiesRes.data) ? activitiesRes.data : activitiesRes.data.data || []);
-        setInquiries(Array.isArray(inquiriesRes.data) ? inquiriesRes.data : inquiriesRes.data.data || []);
-      } catch (error) {
-        console.error('마이페이지 데이터 로딩 실패:', error);
-      }
-    };
-
-    fetchData();
+    axios.get(`http://localhost:8081/api/my-spaces/${parsed.id}`)
+      .then(res => {
+        setMyPlaces(res.data);
+      })
+      .catch(err => {
+        console.error('❌ 내 장소 불러오기 실패:', err);
+        alert('등록한 장소를 불러오는 데 실패했습니다.');
+      });
   }, [navigate]);
 
   return (
-    <div>
-      {/* 상단 로고만 */}
-      <header className="navbar">
-        <div className="navbar-container">
-          <div className="logo">
-            <a href="/">
-              <img src={logo} alt="로고" className="logo-img" />
-            </a>
-          </div>
-        </div>
-      </header>
+    <div className="mypage">
+      {/* 사이드바 */}
+      <aside className="sidebar">
+        <h2>마이페이지</h2>
+        <ul>
+          <li><a href="/mypage">내 장소 목록</a></li>
+          <li><a href="/">홈으로</a></li>
+        </ul>
+      </aside>
 
-      {/* 마이페이지 본문 이하 생략 (기존과 동일) */}
-      {/* ... */}
+      {/* 본문 */}
+      <main className="content">
+        <section className="profile-box">
+          <h3>👤 내 정보</h3>
+          <p><strong>이름:</strong> {user.username}</p>
+          <p><strong>이메일:</strong> {user.email}</p>
+        </section>
+
+        <section>
+          <h3>📌 내가 등록한 장소</h3>
+          <div className="reservation-list">
+            {myPlaces.length === 0 ? (
+              <p>등록한 장소가 없습니다.</p>
+            ) : (
+              myPlaces.map((place) => (
+                <div key={place.id} className="reservation-card">
+                  <h4>{place.name}</h4>
+                  <p>{place.location}</p>
+                  <p>📍 위도: {place.lat}</p>
+                  <p>📍 경도: {place.lng}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 };

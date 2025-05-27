@@ -10,10 +10,10 @@ const categories = [
 ];
 
 const dummySpaces = [
-  { id: 1, title: '홍대 파티룸', category: '파티룸', image: 'https://via.placeholder.com/300x200' },
-  { id: 2, title: '강남 보드게임룸', category: '보드게임', image: 'https://via.placeholder.com/300x200' },
-  { id: 3, title: '신촌 노래방', category: '노래방', image: 'https://via.placeholder.com/300x200' },
-  { id: 4, title: '건대 합주실', category: '합주실', image: 'https://via.placeholder.com/300x200' },
+  { id: 1, title: '파티룸', category: '파티룸', image: 'https://via.placeholder.com/300x200' },
+  { id: 2, title: '보드게임룸', category: '보드게임', image: 'https://via.placeholder.com/300x200' },
+  { id: 3, title: '노래방', category: '노래방', image: 'https://via.placeholder.com/300x200' },
+  { id: 4, title: '합주실', category: '합주실', image: 'https://via.placeholder.com/300x200' },
 ];
 
 function Home() {

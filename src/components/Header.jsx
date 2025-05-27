@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; // location 추가
 import logo from '../assets/logo.png';
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation(); // 현재 경로 확인
   const [user, setUser] = useState(null);
+
+  // ✅ 로그인/회원가입 페이지에서는 헤더 숨김
+  const hideHeaderRoutes = ['/login', '/register'];
+  if (hideHeaderRoutes.includes(location.pathname)) {
+    return null;
+  }
 
   useEffect(() => {
     const stored =
@@ -62,7 +69,6 @@ function Header() {
             </button>
           </>
         )}
-
       </div>
     </header>
   );
