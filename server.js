@@ -11,7 +11,7 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(bodyParser.json());
 
 // 라우터 불러오기
-const userRouter = require('./routes/user');
+const userRouter = require('./routes/user.js');
 app.use('/api', userRouter);
 
 // 정적 파일 서빙
@@ -22,4 +22,8 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 서버 실행 중: http://localhost:${PORT}`);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });

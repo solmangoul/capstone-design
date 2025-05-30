@@ -16,12 +16,11 @@ import './Responsive.css';
 function AppRoutes() {
   const location = useLocation();
 
-  // 특정 경로에만 search-background 적용
-  const withBackground = ['/', '/search', '/category'];
-
-  const isBackgroundPage = withBackground.some((path) =>
-    location.pathname.startsWith(path)
-  );
+  // 정확하게 '/'이거나 '/search', '/category'로 시작하는 경우에만 배경 적용
+  const isBackgroundPage =
+    location.pathname === '/' ||
+    location.pathname.startsWith('/search') ||
+    location.pathname.startsWith('/category');
 
   return (
     <div className="app">
@@ -35,6 +34,7 @@ function AppRoutes() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
+            minHeight: '100vh',
           }}
         >
           <Routes>

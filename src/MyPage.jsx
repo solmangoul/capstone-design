@@ -22,7 +22,8 @@ const MyPage = () => {
 
     axios.get(`http://localhost:8081/api/my-spaces/${parsed.id}`)
       .then(res => {
-        setMyPlaces(res.data);
+        const places = Array.isArray(res.data) ? res.data : [];
+        setMyPlaces(places);
       })
       .catch(err => {
         console.error('❌ 내 장소 불러오기 실패:', err);
@@ -56,11 +57,11 @@ const MyPage = () => {
               <p>등록한 장소가 없습니다.</p>
             ) : (
               myPlaces.map((place) => (
-                <div key={place.id} className="reservation-card">
-                  <h4>{place.name}</h4>
-                  <p>{place.location}</p>
-                  <p>📍 위도: {place.lat}</p>
-                  <p>📍 경도: {place.lng}</p>
+                <div key={place.place_id || place.id} className="reservation-card">
+                  <h4>{place.place_name || place.name}</h4>
+                  <p>{place.address_name || place.location}</p>
+                  <p>📍 위도: {place.lat || place.y}</p>
+                  <p>📍 경도: {place.lng || place.x}</p>
                 </div>
               ))
             )}

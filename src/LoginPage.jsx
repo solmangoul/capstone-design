@@ -35,7 +35,8 @@ function LoginPage() {
       storage.setItem('user', JSON.stringify(userData));
 
       alert(`환영합니다, ${username}님!`);
-      navigate('/');
+      navigate('/');               // 페이지 이동
+      window.location.reload();    // ✅ 이동 후 새로고침
     } catch (err) {
       console.error('❌ 로그인 실패 응답:', err.response?.data || err.message);
       alert('로그인 실패: ' + (err.response?.data?.message || err.message));
@@ -44,14 +45,7 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <div
-        className="auth-container"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+      <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h2 className="auth-title">로그인</h2>
 
         <input
@@ -72,57 +66,23 @@ function LoginPage() {
           style={{ width: '100%' }}
         />
 
-        <button
-          type="button"
-          onClick={handleLogin}
-          style={{ width: '100%' }}
-        >
+        <button type="button" onClick={handleLogin} style={{ width: '100%' }}>
           로그인
         </button>
 
-        {/* ✅ 로그인 유지하기: 왼쪽 정렬, 체크박스는 텍스트 옆 + 세로 정렬 정확 */}
-        <div
-          style={{
-            marginTop: '12px',
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'flex-start',
-            fontSize: '14px',
-          }}
-        >
-          <label
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              whiteSpace: 'nowrap',
-              fontSize: '14px',
-              lineHeight: '1',
-            }}
-          >
+        <div style={{ marginTop: '12px', width: '100%', display: 'flex', justifyContent: 'flex-start', fontSize: '14px' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
             <span style={{ marginRight: '6px' }}>로그인 유지하기</span>
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={() => setRememberMe(!rememberMe)}
-              style={{
-                width: '16px',
-                height: '16px',
-                verticalAlign: 'middle',
-              }}
+              style={{ width: '16px', height: '16px' }}
             />
           </label>
         </div>
 
-        {/* ✅ 계정이 없으신가요: 왼쪽 정렬 */}
-        <div
-          className="auth-footer"
-          style={{
-            marginTop: '20px',
-            fontSize: '14px',
-            width: '100%',
-            textAlign: 'left',
-          }}
-        >
+        <div className="auth-footer" style={{ marginTop: '20px', fontSize: '14px', width: '100%', textAlign: 'left' }}>
           계정이 없으신가요?{' '}
           <a href="/register" style={{ color: '#4f46e5' }}>
             회원가입

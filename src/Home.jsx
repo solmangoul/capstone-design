@@ -1,85 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import hostBg from './assets/host-bg.png';
-
-const categories = [
-  { icon: '🎉', name: '파티룸' },
-  { icon: '🎵', name: '합주실' },
-  { icon: '🎲', name: '보드게임' },
-  { icon: '🎤', name: '노래방' },
-];
-
-const dummySpaces = [
-  { id: 1, title: '파티룸', category: '파티룸', image: 'https://via.placeholder.com/300x200' },
-  { id: 2, title: '보드게임룸', category: '보드게임', image: 'https://via.placeholder.com/300x200' },
-  { id: 3, title: '노래방', category: '노래방', image: 'https://via.placeholder.com/300x200' },
-  { id: 4, title: '합주실', category: '합주실', image: 'https://via.placeholder.com/300x200' },
-];
 
 function Home() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState({ location: '', date: '', start: '', end: '', people: '' });
+  const [searchRegion, setSearchRegion] = useState('');
+  const [spaces, setSpaces] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('전체');
 
-  const handleSearchChange = (field) => (e) => {
-    setSearch({ ...search, [field]: e.target.value });
-  };
+  useEffect(() => {
+    const fetchSpaces = async () => {
+      try {
+        const res = await axios.get('http://localhost:8081/api/all-spaces');
+        setSpaces(res.data);
+      } catch (err) {
+        console.error('❌ 공간 불러오기 실패:', err);
+      }
+    };
+    fetchSpaces();
+  }, []);
 
   const handleCategoryClick = (name) => {
-    navigate(`/category/${name}`);
+    setSelectedCategory(name);
   };
+
+  const categoryList = ['전체', '문화시설', '카페', '음식점', '노래방', '숙박', '병원', '학교', '은행'];
+
+  const filteredSpaces = spaces.filter((space) => {
+    const categoryMatch = selectedCategory === '전체' || space.category_group_name === selectedCategory;
+    const regionMatch = !searchRegion || space.address_name.includes(searchRegion);
+    return categoryMatch && regionMatch;
+  });
 
   return (
     <div className="home">
-      {/* 카테고리 아이콘 */}
       <div className="search-background">
-        <div className="categories">
-          {categories.map((cat) => (
-            <div key={cat.name} className="category-icon-wrap" onClick={() => handleCategoryClick(cat.name)}>
-              <div className="category-icon">{cat.icon}</div>
-              <p className="category-label">{cat.name}</p>
-            </div>
+        {/* 🔹 지역 검색 필드 */}
+        <div className="search-box" style={{ margin: '20px', justifyContent: 'center' }}>
+          <input
+            type="text"
+            placeholder="예: 경기도, 서울특별시, 용인시, 대전광역시"
+            value={searchRegion}
+            onChange={(e) => setSearchRegion(e.target.value)}
+            style={{ width: '300px', padding: '10px', fontSize: '16px' }}
+          />
+        </div>
+
+        {/* 카테고리 버튼 */}
+        <div className="categories" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px', marginBottom: '16px' }}>
+          {categoryList.map((cat) => (
+            <button
+              key={cat}
+              className={`category-button ${selectedCategory === cat ? 'active' : ''}`}
+              onClick={() => handleCategoryClick(cat)}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: '1px solid #ccc',
+                background: selectedCategory === cat ? '#4f46e5' : '#fff',
+                color: selectedCategory === cat ? 'white' : '#333',
+                cursor: 'pointer',
+              }}
+            >
+              {cat}
+            </button>
           ))}
         </div>
 
-        {/* 메인 검색 섹션 */}
-        <section className="hero">
-          <div className="overlay">
-            <h1>당신의 완벽한 취미 공간을 찾아보세요</h1>
-            <div className="search-box">
-              <input placeholder="📍 위치" value={search.location} onChange={handleSearchChange('location')} />
-              <input type="date" value={search.date} onChange={handleSearchChange('date')} />
-              <select value={search.start} onChange={handleSearchChange('start')}>
-                {Array.from({ length: 48 }, (_, i) => {
-                  const h = String(Math.floor(i / 2)).padStart(2, '0');
-                  const m = i % 2 === 0 ? '00' : '30';
-                  return <option key={i} value={`${h}:${m}`}>{`${h}:${m}`}</option>;
-                })}
-              </select>
-              <select value={search.end} onChange={handleSearchChange('end')}>
-                {Array.from({ length: 48 }, (_, i) => {
-                  const h = String(Math.floor(i / 2)).padStart(2, '0');
-                  const m = i % 2 === 0 ? '00' : '30';
-                  return <option key={i} value={`${h}:${m}`}>{`${h}:${m}`}</option>;
-                })}
-              </select>
-              <input type="number" placeholder="👤 인원" value={search.people} onChange={handleSearchChange('people')} />
-            </div>
-            <button className="search-button">공간 검색</button>
-          </div>
-        </section>
-
         {/* 추천 공간 카드 */}
-        <section className="results">
-          {dummySpaces.map((space) => (
-            <div key={space.id} className="card">
-              <img src={space.image} alt={space.title} />
-              <h3>{space.title}</h3>
-              <p className="category-tag">{space.category}</p>
+        <section className="results" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', padding: '20px' }}>
+          {filteredSpaces.map((space) => (
+            <div key={space.place_id} className="card" style={{ width: '280px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 2px 6px rgba(0,0,0,0.1)', padding: '12px' }}>
+              <h3 style={{ margin: '10px 0 6px' }}>{space.place_name}</h3>
+              <p style={{ fontSize: '14px', color: '#555' }}>{space.category_group_name || space.category_name}</p>
+              <p style={{ fontSize: '13px', color: '#777' }}>{space.address_name}</p>
             </div>
           ))}
         </section>
-        
       </div>
+
       {/* 호스트 섹션 */}
       <section
         className="host-section"
@@ -89,12 +89,16 @@ function Home() {
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           color: 'white',
+          padding: '60px 20px',
+          textAlign: 'center',
         }}
       >
         <div className="host-text">
           <h2>추천하고 싶은 공간이 있나요?</h2>
-          <p>당신만 알고 있는 멋진 장소를 다른 사람에게 소개해보세요. 지금 바로 추천해보세요!</p>
-          <button onClick={() => navigate('/recommend')}>장소 추천하기</button>
+          <p>당신만 알고 있는 멋진 장소를 다른 사람에게 소개해보세요.</p>
+          <button onClick={() => navigate('/recommend')} style={{ marginTop: '16px', padding: '10px 20px', background: '#4f46e5', border: 'none', color: 'white', borderRadius: '4px' }}>
+            장소 추천하기
+          </button>
         </div>
       </section>
     </div>
