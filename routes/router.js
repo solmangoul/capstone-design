@@ -106,7 +106,40 @@ router.get('/all-spaces', (req, res) => {
   });
 });
 
+// 리뷰 저장 API
+router.post('/review', (req, res) => {
+  const { user_id, place_id, review, rating } = req.body;
+  if (!user_id || !place_id || !review) {
+    return res.status(400).json({ message: '필수 항목 누락' });
+  }
+
+  const sql = `INSERT INTO reviews (user_id, place_id, review, rating, created_at) VALUES (?, ?, ?, ?, NOW())`;
+  connection.query(sql, [user_id, place_id, review, rating], (err) => {
+    if (err) return res.status(500).json({ message: 'DB 저장 실패' });
+    res.status(200).json({ message: '리뷰 등록 완료' });
+  });
+});
+
+router.get('/reviews/:place_id', (req, res) => {
+  const placeId = req.params.place_id;
+  const sql = `
+    SELECT reviews.*, users.username
+    FROM reviews
+    JOIN users ON reviews.user_id = users.id
+    WHERE place_id = ?
+    ORDER BY created_at DESC
+  `;
+  connection.query(sql, [placeId], (err, results) => {
+    if (err) return res.status(500).json({ message: '리뷰 조회 실패' });
+    res.status(200).json(results);
+  });
+});
+
+
+
+
+
 // 기본 테스트 라우트
-router.get('/', (req, res) => res.send('✅ user.js 라우터 작동 중!'));
+router.get('/', (req, res) => res.send('✅ router.js 라우터 작동 중!'));
 
 module.exports = router;

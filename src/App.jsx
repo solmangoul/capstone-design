@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Home';
 import CategoryPage from './CategoryPage';
 import SearchPage from './SearchPage';
@@ -13,51 +13,36 @@ import bgImage from './assets/bg.png';
 import './App.css';
 import './Responsive.css';
 
+function PageWithBackground({ children }) {
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function AppRoutes() {
-  const location = useLocation();
-
-  // 정확하게 '/'이거나 '/search', '/category'로 시작하는 경우에만 배경 적용
-  const isBackgroundPage =
-    location.pathname === '/' ||
-    location.pathname.startsWith('/search') ||
-    location.pathname.startsWith('/category');
-
   return (
     <div className="app">
       <Header />
 
-      {isBackgroundPage ? (
-        <div
-          className="search-background"
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            minHeight: '100vh',
-          }}
-        >
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/category/:name" element={<CategoryPage />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/recommend" element={<RecommendPage />} />
-          </Routes>
-        </div>
-      ) : (
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/category/:name" element={<CategoryPage />} />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/mypage" element={<MyPage />} />
-          <Route path="/recommend" element={<RecommendPage />} />
-        </Routes>
-      )}
+      <Routes>
+        <Route path="/" element={<PageWithBackground><Home /></PageWithBackground>} />
+        <Route path="/category/:name" element={<PageWithBackground><CategoryPage /></PageWithBackground>} />
+        <Route path="/search" element={<PageWithBackground><SearchPage /></PageWithBackground>} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/recommend" element={<RecommendPage />} />
+      </Routes>
 
       <Footer />
     </div>

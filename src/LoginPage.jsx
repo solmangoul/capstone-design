@@ -35,8 +35,8 @@ function LoginPage() {
       storage.setItem('user', JSON.stringify(userData));
 
       alert(`환영합니다, ${username}님!`);
-      navigate('/');               // 페이지 이동
-      window.location.reload();    // ✅ 이동 후 새로고침
+      navigate('/');
+      window.location.reload();
     } catch (err) {
       console.error('❌ 로그인 실패 응답:', err.response?.data || err.message);
       alert('로그인 실패: ' + (err.response?.data?.message || err.message));
@@ -45,30 +45,32 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div className="auth-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
         <h2 className="auth-title">로그인</h2>
 
-        <input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ width: '100%' }}
-        />
+        <form onSubmit={handleLogin} style={{ width: '100%' }}>
+          <input
+            type="email"
+            placeholder="이메일"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{ width: '100%', marginBottom: '10px' }}
+          />
 
-        <input
-          type="password"
-          placeholder="비밀번호"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ width: '100%' }}
-        />
+          <input
+            type="password"
+            placeholder="비밀번호"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{ width: '100%', marginBottom: '10px' }}
+          />
 
-        <button type="button" onClick={handleLogin} style={{ width: '100%' }}>
-          로그인
-        </button>
+          <button type="submit" style={{ width: '100%' }}>
+            로그인
+          </button>
+        </form>
 
         <div style={{ marginTop: '12px', width: '100%', display: 'flex', justifyContent: 'flex-start', fontSize: '14px' }}>
           <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
