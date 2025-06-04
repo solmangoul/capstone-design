@@ -17,7 +17,7 @@ html, body, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px; /* 상단바 높이 고정 */
+  height: 64px;
   padding: 0 32px;
   background-color: white;
   border-bottom: 1px solid #eee;
@@ -25,8 +25,8 @@ html, body, #root {
 }
 
 .logo {
-  height: 100px;     /* 로고 이미지 키움 */
-  max-height: 100%; /* 부모보다 커지지 않게 */
+  height: 100px;
+  max-height: 100%;
   object-fit: contain;
 }
 
@@ -38,44 +38,25 @@ html, body, #root {
   border-radius: 50px;
   border: 1px solid #ccc;
 }
-.search-background,
-.hero {
-  position: relative;
-  z-index: 0;
-}
 
-.search-background::before,
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4); /* 어두운 오버레이 */
-  z-index: 1;
-}
-
-.search-background > *,
-.hero > * {
-  position: relative;
-  z-index: 2; /* 텍스트가 오버레이 위로 오게 */
+.nav-buttons {
+  display: flex;
+  gap: 10px;
 }
 
 .nav-buttons .host {
   padding: 8px 16px;
   font-size: 14px;
-  border: 1px solid #111827; /* 테두리 색상 */
+  border: 1px solid #111827;
   border-radius: 6px;
-  background: transparent;    /* 배경 없음 */
-  color: #111827;             /* 글씨색 */
+  background: transparent;
+  color: #111827;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .nav-buttons .host:hover {
-  background-color: #f3f4f6;  /* 살짝 회색 배경 */
-}
-.nav-buttons {
-  display: flex;
-  gap: 10px;
+  background-color: #f3f4f6;
 }
 
 .nav-buttons button {
@@ -96,240 +77,31 @@ html, body, #root {
   color: white;
 }
 
-/* 카테고리 아이콘 */
-.categories {
-  background: black;
-  padding: 40px 0;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-.category-icon-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: black;
-  cursor: pointer;
-}
-
-.category-icon {
-  width: 60px;
-  height: 60px;
-  background: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-}
-
-.category-label {
-  margin-top: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: white;
-}
-
-/* Hero 섹션 */
+/* 오버레이 효과 */
+.search-background,
 .hero {
-  background-image: url('https://via.placeholder.com/1440x400');
-  background-size: cover;
-  background-position: center;
-  padding: 80px 0;
-  text-align: center;
-  color: white;
+  position: relative;
+  z-index: 0;
 }
 
+.search-background::before,
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
 
+.search-background > *,
+.hero > * {
+  position: relative;
+  z-index: 2;
+}
 
 .overlay h1 {
   font-size: 28px;
   margin-bottom: 20px;
-}
-
-.search-box {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.search-box input,
-.search-box select {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  width: 160px;
-  font-size: 14px;
-}
-
-.search-button {
-  margin-top: 10px;
-  padding: 12px 24px;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-
-/* 카드 정렬 */
-.results {
-  padding: 40px 20px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 24px;
-  position: relative;
-}
-
-/* 카드 스타일 */
-.card {
-  width: 280px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 16px;
-  background: white;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-.card h3,
-.card p {
-  color: #fff; /* 흰색으로 */
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-}
-.hero,
-.search-background {
-  transition: background 0.3s ease;
-}
-
-.category-tag {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-/* 카테고리/검색 결과 헤더 */
-.category-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 auto 20px;
-  width: 100%;
-  max-width: 1024px;
-  padding: 0 20px;
-  color: white;
-}
-
-.search-sort-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  position: relative;
-}
-
-.sort-select {
-  margin-top: 4px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 13px;
-  background-color: white;
-  cursor: pointer;
-}
-
-.filter-icon {
-  background: #4f46e5;
-  color: white;
-  padding: 6px 12px;
-  font-size: 13px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* 필터 패널 */
-.filter-panel {
-  position: absolute;
-  top: 50px;
-  right: 0;
-  z-index: 10;
-  background: #f9fafb;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px 16px;
-  width: 260px;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: scaleY(0);
-  transform-origin: top;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.filter-panel.open {
-  transform: scaleY(1);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* 체크박스 애니메이션 */
-.checkbox-group input[type="checkbox"] {
-  appearance: none;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  position: relative;
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.checkbox-group input[type="checkbox"]:checked {
-  background-color: #4f46e5;
-  border-color: #4f46e5;
-}
-
-.checkbox-group input[type="checkbox"]:checked::after {
-  content: "✔";
-  color: white;
-  font-size: 12px;
-  position: absolute;
-  top: 0;
-  left: 3px;
-}
-
-.apply-button {
-  padding: 8px;
-  background: black;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
 }
 
 /* 호스트 섹션 */
@@ -337,9 +109,27 @@ html, body, #root {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f9fafb;
+  background-image: url('../assets/host-bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 60px 40px;
   flex-wrap: wrap;
+  color: white;
+  position: relative;
+}
+
+.host-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 0;
+}
+
+.host-section > * {
+  position: relative;
+  z-index: 1;
 }
 
 .host-text {
@@ -402,70 +192,6 @@ html, body, #root {
   padding-top: 20px;
 }
 
-/* 모바일 대응 */
-@media (max-width: 768px) {
-  .filter-panel {
-    position: fixed;
-    top: 60px;
-    right: 20px;
-    width: 90%;
-    max-width: 360px;
-    z-index: 1000;
-    transform-origin: top;
-  }
-
-  .search-sort-bar {
-    flex-direction: column;
-    align-items: flex-end;
-  }
-
-  .card {
-    width: 90vw;
-  }
-
-  .sort-select {
-    width: 100%;
-  }
-
-  .footer {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .footer > div {
-    margin-bottom: 20px;
-  }
-
-  .footer-bottom {
-    font-size: 12px;
-  }
-}
-.host-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-image: url('../assets/host-bg.png'); /* ✅ 경로는 css 위치 기준 */
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 60px 40px;
-  flex-wrap: wrap;
-  color: white; /* 텍스트가 어두운 배경 위에 잘 보이게 */
-  position: relative;
-}
-.host-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3); /* 어두운 오버레이 */
-  z-index: 0;
-}
-
-.host-section > * {
-  position: relative;
-  z-index: 1;
-}
 /* 로그인/회원가입 공통 스타일 */
 .login-container,
 .auth-page {
@@ -530,54 +256,23 @@ html, body, #root {
   color: #374151;
   text-align: center;
 }
+
+/* 모바일 대응 */
 @media (max-width: 768px) {
-  /* 검색창 */
-  .search-box {
+  .footer {
     flex-direction: column;
     align-items: center;
+    text-align: center;
   }
 
-  .search-box input,
-  .search-box select {
-    width: 100%;
-    max-width: 300px;
+  .footer > div {
+    margin-bottom: 20px;
   }
 
-  .search-button {
-    width: 100%;
-    max-width: 300px;
+  .footer-bottom {
+    font-size: 12px;
   }
 
-  /* 카드 영역 */
-  .card {
-    width: 90%;
-  }
-
-  /* 카테고리 아이콘 */
-  .categories {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0;
-  }
-
-  .category-icon {
-    width: 50px;
-    height: 50px;
-    font-size: 22px;
-  }
-
-  .category-label {
-    font-size: 13px;
-  }
-
-  /* Hero 타이틀 */
-  .overlay h1 {
-    font-size: 20px;
-    padding: 0 10px;
-  }
-
-  /* 호스트 섹션 */
   .host-text h2 {
     font-size: 20px;
   }

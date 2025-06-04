@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './Home';
 import CategoryPage from './CategoryPage';
 import SearchPage from './SearchPage';
@@ -16,6 +16,7 @@ import './Responsive.css';
 function PageWithBackground({ children }) {
   return (
     <div
+      className="search-background"
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize: 'cover',
@@ -30,21 +31,52 @@ function PageWithBackground({ children }) {
 }
 
 function AppRoutes() {
+  const location = useLocation();
+  const noHeaderFooterRoutes = ['/login', '/register'];
+  const isBackgroundPage = ['/', '/search'].includes(location.pathname) || location.pathname.startsWith('/category');
+
+  const showHeaderFooter = !noHeaderFooterRoutes.includes(location.pathname);
+
   return (
     <div className="app">
-      <Header />
+      {showHeaderFooter && <Header />}
 
       <Routes>
-        <Route path="/" element={<PageWithBackground><Home /></PageWithBackground>} />
-        <Route path="/category/:name" element={<PageWithBackground><CategoryPage /></PageWithBackground>} />
-        <Route path="/search" element={<PageWithBackground><SearchPage /></PageWithBackground>} />
+        <Route
+          path="/"
+          element={
+            isBackgroundPage ? (
+              <PageWithBackground>
+                <Home />
+              </PageWithBackground>
+            ) : (
+              <Home />
+            )
+          }
+        />
+        <Route
+          path="/category/:name"
+          element={
+            <PageWithBackground>
+              <CategoryPage />
+            </PageWithBackground>
+          }
+        />
+        <Route
+          path="/search"
+          element={
+            <PageWithBackground>
+              <SearchPage />
+            </PageWithBackground>
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/recommend" element={<RecommendPage />} />
       </Routes>
 
-      <Footer />
+      {showHeaderFooter && <Footer />}
     </div>
   );
 }
