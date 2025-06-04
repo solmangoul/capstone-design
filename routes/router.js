@@ -135,6 +135,54 @@ router.get('/reviews/:place_id', (req, res) => {
   });
 });
 
+// 내 리뷰 조회
+router.get('/my-reviews/:userId', (req, res) => {
+  const sql = `
+    SELECT r.id, r.review, r.rating, r.created_at, k.place_name
+    FROM reviews r
+    JOIN kakao_places k ON r.place_id = k.place_id
+    WHERE r.user_id = ?
+    ORDER BY r.created_at DESC
+  `;
+  connection.query(sql, [req.params.userId], (err, results) => {
+    if (err) return res.status(500).json({ message: '리뷰 조회 실패' });
+    res.status(200).json(results);
+  });
+});
+
+
+// 리뷰 수정
+router.put('/review/:id', (req, res) => {
+  const { review, rating } = req.body;
+  const sql = `UPDATE reviews SET review = ?, rating = ? WHERE id = ?`;
+  connection.query(sql, [review, rating, req.params.id], (err) => {
+    if (err) return res.status(500).json({ message: '리뷰 수정 실패' });
+    res.status(200).json({ message: '리뷰가 수정되었습니다.' });
+  });
+});
+
+
+router.delete('/place/:placeId', (req, res) => {
+  const sql = `DELETE FROM kakao_places WHERE place_id = ?`;
+  connection.query(sql, [req.params.placeId], (err, results) => {
+    if (err) return res.status(500).json({ message: '장소 삭제 실패' });
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: '삭제할 장소가 없습니다.' });
+    }
+    res.status(200).json({ message: '장소가 삭제되었습니다.' });
+  });
+});
+
+router.delete('/review/:id', (req, res) => {
+  const sql = `DELETE FROM reviews WHERE id = ?`;
+  connection.query(sql, [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ message: '리뷰 삭제 실패' });
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: '삭제할 리뷰가 없습니다.' });
+    }
+    res.status(200).json({ message: '리뷰가 삭제되었습니다.' });
+  });
+});
 
 
 

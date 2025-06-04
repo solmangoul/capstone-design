@@ -168,3 +168,26 @@ body {
   font-size: 0.95rem;
   margin-bottom: 12px;
 }
+
+.reservation-card {
+  background-color: #fefefe;
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.reservation-card button {
+  margin-top: 12px;
+  padding: 6px 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reservation-card button:hover {
+  background-color: #c0392b;
+}

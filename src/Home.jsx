@@ -142,6 +142,7 @@ const ReviewForm = ({ placeId }) => {
   const [review, setReview] = useState('');
   const [rating, setRating] = useState(0);
   const [reviewList, setReviewList] = useState([]);
+  const [editingReviewId, setEditingReviewId] = useState(null);
 
   const fetchReviews = async () => {
     try {
@@ -161,21 +162,46 @@ const ReviewForm = ({ placeId }) => {
   const handleSubmit = async () => {
     if (!user) return alert('로그인이 필요합니다.');
 
+    const url = editingReviewId
+      ? `http://localhost:8081/api/review/${editingReviewId}`
+      : 'http://localhost:8081/api/review';
+
+    const method = editingReviewId ? 'PUT' : 'POST';
+
     try {
-      const res = await fetch('http://localhost:8081/api/review', {
-        method: 'POST',
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.id, place_id: placeId, review, rating }),
       });
 
-      if (!res.ok) throw new Error('리뷰 등록 실패');
-      alert('✅ 리뷰가 등록되었습니다!');
+      if (!res.ok) throw new Error(editingReviewId ? '리뷰 수정 실패' : '리뷰 등록 실패');
+      alert(editingReviewId ? '✏️ 리뷰가 수정되었습니다!' : '✅ 리뷰가 등록되었습니다!');
       setReview('');
       setRating(0);
+      setEditingReviewId(null);
       fetchReviews();
     } catch (err) {
-      alert('❌ 등록 실패: ' + err.message);
+      alert('❌ 처리 실패: ' + err.message);
     }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('이 리뷰를 삭제하시겠습니까?')) return;
+    try {
+      const res = await fetch(`http://localhost:8081/api/review/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('삭제 실패');
+      alert('🗑️ 리뷰가 삭제되었습니다.');
+      fetchReviews();
+    } catch (err) {
+      alert('❌ 삭제 실패: ' + err.message);
+    }
+  };
+
+  const startEdit = (review) => {
+    setReview(review.review);
+    setRating(review.rating);
+    setEditingReviewId(review.id);
   };
 
   return (
@@ -197,7 +223,7 @@ const ReviewForm = ({ placeId }) => {
           </span>
         ))}
       </div>
-      <button onClick={handleSubmit}>리뷰 등록</button>
+      <button onClick={handleSubmit}>{editingReviewId ? '리뷰 수정' : '리뷰 등록'}</button>
 
       <hr className="review-divider" />
       <h4>📋 등록된 리뷰</h4>
@@ -209,6 +235,12 @@ const ReviewForm = ({ placeId }) => {
             <p>👤 <strong>{r.username}</strong></p>
             <p>⭐ {r.rating}점</p>
             <p>{r.review}</p>
+            {user && user.id === r.user_id && (
+              <div style={{ marginTop: '6px' }}>
+                <button onClick={() => startEdit(r)} style={{ marginRight: '8px' }}>수정</button>
+                <button onClick={() => handleDelete(r.id)}>삭제</button>
+              </div>
+            )}
           </div>
         ))
       )}
